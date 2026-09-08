@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zapier vs Make vs n8n — which automation tool are you actually paying for?</title>
+<meta name="guide-date" content="2026-08-04" />
+<meta name="guide-excerpt" content="The real difference between Zapier, Make, and n8n isn't features — it's how each one bills you once your automation actually gets busy. Here's the honest breakdown." />
+<meta name="guide-category" content="Automation" />
+<meta name="guide-tool" content="n8n, Zapier, Make" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .guide-top{padding-top:40px;}
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--charcoal-soft);border:none;font-weight:500;}
+  .backlink:hover{color:var(--coral-deep);}
+  .eyebrow{margin-top:34px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);font-weight:700;}
+  h1{font-size:clamp(32px,5.4vw,50px);line-height:1.1;margin:.28em 0 .32em;letter-spacing:-.02em;color:var(--charcoal);}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  /* overview cards */
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  /* numbered flow list */
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  /* link cards */
+  .linkcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+  .linkcard{display:block;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-left:3px solid var(--coral);}
+  .linkcard:hover{border-color:var(--coral);}
+  .lc-name{display:block;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .lc-desc{display:block;font-size:15px;color:var(--charcoal-soft);}
+  /* callout */
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  /* billing model comparison cards */
+  .tool-cards{display:grid;grid-template-columns:1fr;gap:16px;margin:24px 0;}
+  .tool-card{background:var(--cream-2);border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;}
+  .tool-card .tool-name{font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px;}
+  .tool-card .tool-billing{display:inline-block;font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--coral-deep);background:rgba(234,106,71,.1);border-radius:6px;padding:3px 9px;margin-bottom:10px;}
+  .tool-card .tool-desc{font-size:16px;color:var(--charcoal-soft);margin-bottom:10px;}
+  .tool-card .tool-verdict{font-size:15px;font-weight:600;color:var(--charcoal);border-top:1px solid var(--line);padding-top:10px;margin-top:6px;}
+  /* comparison table */
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex th{text-align:left;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--charcoal-soft);font-weight:700;padding:8px 6px;border-bottom:2px solid var(--line);}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:160px;}
+  .honest li{margin:.55em 0;}
+  /* decision block */
+  .decision-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:22px 0;}
+  .decision-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;text-align:center;}
+  .decision-card .if{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--charcoal-soft);font-weight:700;margin-bottom:6px;}
+  .decision-card .pick{font-size:22px;font-weight:800;color:var(--coral);margin-bottom:6px;}
+  .decision-card .why{font-size:14px;color:var(--charcoal-soft);}
+  /* prompt block */
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  /* footer */
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.linkcards{grid-template-columns:1fr;}.ex td:first-child{width:96px;}.decision-row{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">The real difference between these three tools isn't features. It's how each one bills you once your automation actually gets busy — and that gap gets wide, fast.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#billing">↓ Skip to the billing breakdown</a>
+    <span class="readtime">6 min read · Zapier, Make, n8n</span>
+  </div>
+
+  <img src="images/zapier-vs-make-vs-n8n.webp" alt="Zapier vs Make vs n8n comparison — automation tool billing breakdown" style="width:100%;border-radius:16px;margin:22px 0 8px;border:1px solid var(--line);">
+
+  <h2>Why this comparison exists</h2>
+  <p>All three tools will automate your workflow. All three have visual builders, app integrations, and free tiers that feel generous until you start using them properly. The moment things get real — when a workflow runs hundreds or thousands of times a month — the difference in how they count usage becomes the only thing that actually matters.</p>
+  <p>Most comparisons bury that. This one starts with it.</p>
+
+  <div class="callout">
+    <span class="tag">The one question to ask</span>
+    <p>Before picking a tool, ask: <strong>how does this platform count a "unit" of work?</strong> That answer determines your bill more than any other feature on the comparison chart.</p>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="billing">How each tool actually charges you 💸</h2>
+
+  <div class="tool-cards">
+    <div class="tool-card">
+      <div class="tool-name">Zapier</div>
+      <div class="tool-billing">Billed per task</div>
+      <p class="tool-desc">Every individual action inside a workflow counts as a separate task. Run a 10-step Zap a thousand times in a month and that's <strong>10,000 tasks</strong> — not 1,000. Zapier has the easiest learning curve and the biggest app library, but it's the most expensive option at any meaningful volume.</p>
+      <div class="tool-verdict">Best for: simple workflows, small teams, people who need to move fast and aren't hitting volume yet.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Make</div>
+      <div class="tool-billing">Billed per operation</div>
+      <p class="tool-desc">Similar counting logic to Zapier — each step is an operation — but the pricing tiers are structured to give you more for less. At equivalent volume, Make typically runs <strong>roughly 60% cheaper than Zapier</strong>. The canvas is built for branching logic and is genuinely good at visual complexity.</p>
+      <div class="tool-verdict">Best for: complex branching flows, teams who want a visual no-code builder without Zapier's bill.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">n8n</div>
+      <div class="tool-billing">Billed per execution</div>
+      <p class="tool-desc">The entire workflow counts as <strong>one unit</strong>, regardless of how many nodes are inside it. That same 10-step workflow running 10,000 times a month can cost <strong>80–90% less than Zapier</strong> at equivalent volume. It's open-source, self-hostable, and the only one of the three genuinely built for AI agents with memory across runs.</p>
+      <div class="tool-verdict">Best for: developers and technical builders, AI agent workflows, anything running at serious scale.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>Side-by-side at a glance 📊</h2>
+  <table class="ex">
+    <tr>
+      <th>Factor</th>
+      <th>Zapier</th>
+      <th>Make</th>
+      <th>n8n</th>
+    </tr>
+    <tr>
+      <td>Billing unit</td>
+      <td>Per task (each step)</td>
+      <td>Per operation (each step)</td>
+      <td>Per execution (whole workflow)</td>
+    </tr>
+    <tr>
+      <td>Relative cost at scale</td>
+      <td>Highest</td>
+      <td>~60% less than Zapier</td>
+      <td>80–90% less than Zapier</td>
+    </tr>
+    <tr>
+      <td>Learning curve</td>
+      <td>Easiest</td>
+      <td>Moderate</td>
+      <td>More technical</td>
+    </tr>
+    <tr>
+      <td>App library</td>
+      <td>Largest</td>
+      <td>Very large</td>
+      <td>Growing; extensible via code</td>
+    </tr>
+    <tr>
+      <td>Visual builder</td>
+      <td>Linear steps</td>
+      <td>Canvas with branching</td>
+      <td>Node canvas with branching</td>
+    </tr>
+    <tr>
+      <td>Self-hostable</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Yes (open-source)</td>
+    </tr>
+    <tr>
+      <td>AI agent support</td>
+      <td>Basic</td>
+      <td>Moderate</td>
+      <td>Native, with memory across runs</td>
+    </tr>
+  </table>
+
+  <hr class="divider">
+
+  <h2 id="pick">Which one to pick 🎯</h2>
+  <p>Three clear scenarios. Most people fit cleanly into one of them:</p>
+
+  <div class="decision-row">
+    <div class="decision-card">
+      <div class="if">No technical skill, simple workflow</div>
+      <div class="pick">Zapier</div>
+      <div class="why">Pay the premium for the easiest on-ramp. Worth it if volume is low.</div>
+    </div>
+    <div class="decision-card">
+      <div class="if">Complex branching, still want no-code</div>
+      <div class="pick">Make</div>
+      <div class="why">Visual canvas built for logic, at a fraction of Zapier's cost.</div>
+    </div>
+    <div class="decision-card">
+      <div class="if">AI agents, memory, serious scale</div>
+      <div class="pick">n8n</div>
+      <div class="why">Built for it. Execution-based billing means the cost barely moves as volume grows.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>The maths on a real workflow 🔢</h2>
+  <p>A concrete example makes the billing difference tangible. Take a lead-capture workflow: form submission triggers scoring, enrichment, a CRM push, and a Slack notification — call it 10 steps. It runs 1,000 times a month.</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Monthly usage · 10-step workflow · 1,000 runs</span></div>
+    <pre>Zapier   → <span class="brk">10,000 tasks</span>   (10 steps × 1,000 runs)
+Make     → <span class="brk">10,000 ops</span>     (same counting, lower price per unit)
+n8n      → <span class="brk">1,000 executions</span> (1 execution × 1,000 runs)
+
+At 10,000 runs/month:
+Zapier   → 100,000 tasks  → expensive paid tier
+Make     → 100,000 ops    → ~60% less than Zapier
+n8n      → 10,000 exec    → 80–90% less than Zapier</pre>
+  </div>
+
+  <p>The gap only grows as volume increases. A workflow that runs 10x more often costs 10x more on Zapier and Make — it costs almost nothing extra on n8n cloud, and literally nothing extra if you're self-hosting.</p>
+
+  <hr class="divider">
+
+  <h2 id="honest">The honest bit ✅</h2>
+  <ul class="honest">
+    <li><strong>n8n's cost advantage assumes you can handle some technical friction.</strong> If JavaScript expressions and self-hosting sound like a weekend project you don't want, Zapier's simplicity has real value — it's not just marketing.</li>
+    <li><strong>Make's canvas is genuinely good for visual thinkers.</strong> If you have complex conditional logic and don't want to write code, Make is a better fit than n8n — not just a cheaper Zapier.</li>
+    <li><strong>Zapier's app library is still the deepest.</strong> For obscure SaaS tools, Zapier often has the integration when nobody else does. That matters if the specific app is the constraint.</li>
+    <li><strong>Self-hosting n8n shifts cost from usage fees to infrastructure and maintenance.</strong> It can be cheaper at scale, but it isn't free — you're trading money for time and technical responsibility.</li>
+    <li><strong>All three platforms change their pricing.</strong> The relative positions here are accurate as of mid-2026, but check current plans before committing to anything at volume.</li>
+  </ul>
+
+  <div class="cta">
+    <h2>Not sure which one you're overpaying for? ⚙️</h2>
+    <p>If you're already running automations and want an honest look at whether your current tool is the right one for your volume and use case, that's exactly the kind of thing a short call is useful for.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/consultingcall" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

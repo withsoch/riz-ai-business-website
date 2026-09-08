@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build the Failure Path Before the Happy Path — an n8n automation guide</title>
+<meta name="guide-date" content="2026-07-24" />
+<meta name="guide-excerpt" content="Most n8n tutorials stop once data flows once. Here's why a workflow needs an explicit failure path — not just a happy path — to survive its first real week." />
+<meta name="guide-category" content="Automation" />
+<meta name="guide-tool" content="n8n" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .guide-top{padding-top:40px;}
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--charcoal-soft);border:none;font-weight:500;}
+  .backlink:hover{color:var(--coral-deep);}
+  .eyebrow{margin-top:34px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);font-weight:700;}
+  h1{font-size:clamp(32px,5.4vw,50px);line-height:1.1;margin:.28em 0 .32em;letter-spacing:-.02em;color:var(--charcoal);}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  /* overview cards */
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  /* numbered flow list */
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  /* link cards */
+  .linkcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+  .linkcard{display:block;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-left:3px solid var(--coral);}
+  .linkcard:hover{border-color:var(--coral);}
+  .lc-name{display:block;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .lc-desc{display:block;font-size:15px;color:var(--charcoal-soft);}
+  /* callout */
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  /* prompt block — jet black */
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre.plain{border-radius:12px;border-top:1px solid var(--code-border);}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  .prompt-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin:24px 0 8px;}
+  .prompt-label.spaced{margin-top:26px;}
+  /* comparison table */
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:120px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  /* footer */
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.linkcards{grid-template-columns:1fr;}.ex td:first-child{width:96px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">Most n8n tutorials teach you to connect nodes until data flows once. That's the demo version. Here's the difference between a workflow that works in the demo and one that's still running quietly six months later.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#start">↓ Skip to the build order</a>
+    <span class="readtime">7 min read · n8n, any version</span>
+  </div>
+
+  <!-- ============ BODY: build per references/formats.md ============
+       Replace the sample sections below with the real ones for THIS guide.
+       Keep the intro above, the honest-bit, and the footer below. -->
+
+  <h2>What you're actually building 🔧</h2>
+  <p>It's easy to tell when an n8n workflow works in the demo: you click "execute," data flows from node to node, and the last one turns green. It's much harder to tell whether it'll survive its first real week — the day the API times out, the form submits with a blank field, or the trigger fires twice on the same event.</p>
+  <p>Most workflows that get turned off within a month don't fail because the happy path was wrong. They fail because nothing existed for the moment it wasn't happy.</p>
+  <div class="callout"><span class="tag">The one rule</span><p>If your workflow doesn't have an explicit path for "this data is missing" or "this call failed," it isn't finished — it's just untested.</p></div>
+
+  <div class="steps3">
+    <div class="step-card"><div class="n">Piece 1</div><div class="t">Test safely</div><div class="d">Build against pinned sample data, not the live trigger.</div></div>
+    <div class="step-card"><div class="n">Piece 2</div><div class="t">Handle the break</div><div class="d">An explicit check for the data that won't always be there.</div></div>
+    <div class="step-card"><div class="n">Piece 3</div><div class="t">Tell a human</div><div class="d">An error path that pings you — not one that fails silently.</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="start">The build order that actually holds up</h2>
+  <p>Same nodes, different order. This is the sequence that produces a workflow you can walk away from:</p>
+
+  <ol class="flow">
+    <li><strong>Start with a Manual Trigger and pinned sample data.</strong> Never build your first pass against the live trigger — you'll end up testing against real customer data before you've handled a single edge case.</li>
+    <li><strong>Map the happy path, testing node by node.</strong> Use "Execute step" on each node as you add it, not just a full run at the end. It's much easier to spot a bad field mapping one node at a time.</li>
+    <li><strong>Add an explicit check for anything you're assuming exists.</strong> An IF or Switch node for the email that might be blank, the API field that might come back null. If you're not checking for it, you're assuming it, and assumptions are where workflows quietly break.</li>
+    <li><strong>Wire up an Error Trigger workflow.</strong> A separate small workflow, triggered on failure, that posts to Slack or email with what broke and where. This is the single highest-leverage node most builds skip.</li>
+    <li><strong>Only now, swap in the real trigger.</strong> Webhook, schedule, whatever it needs to be — once the checks and the error path exist, turning on the live trigger is safe.</li>
+    <li><strong>Watch the first few real executions.</strong> Don't build it and walk away the same hour. The first real data is always slightly different from your sample.</li>
+  </ol>
+
+  <hr class="divider">
+
+  <h2>Which n8n feature, for which job</h2>
+  <p>A short reference for the situations that come up in almost every build:</p>
+  <table class="ex">
+    <tr><td>Timeouts</td><td>"Continue on Fail" on that node, paired with an IF check right after it — don't let a silent null flow downstream unchecked.</td></tr>
+    <tr><td>Overloaded workflow</td><td>Split it. An "Execute Workflow" node calling separate, smaller sub-workflows is easier to debug than one 40-node monolith.</td></tr>
+    <tr><td>Building live</td><td>Manual Trigger + Pin Data while you build, so you're not hammering a real API or a real inbox on every test run.</td></tr>
+    <tr><td>Silent failures</td><td>An Error Trigger workflow that posts to Slack or email the moment something breaks, with which node and why.</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h2>What this looks like in practice 📋</h2>
+  <p>Take a common one: a contact-form submission that gets scored and pushed into a CRM. Built the fast way, this breaks the first time someone submits the form without a phone number, or the CRM's API has a slow minute — the workflow just stalls or drops the lead, and nobody knows until a client asks where their inquiry went.</p>
+  <p>Built in the order above, the same workflow has an IF node checking for the phone number before the scoring step (routing incomplete submissions to a "needs follow-up" path instead of silently discarding them), and an Error Trigger workflow watching the CRM push. When the CRM has a slow minute, the error workflow fires instead of the lead vanishing — someone gets a message like this instead of finding out from a client:</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Error alert message · Slack node</span><button class="copy-btn" data-target="p1">Copy</button></div>
+    <pre id="p1">🚨 Workflow failed: <span class="brk">[WORKFLOW NAME]</span>
+Node: {{ $json.error.node.name }}
+Reason: {{ $json.error.message }}
+Time: {{ $now.format('yyyy-LL-dd HH:mm') }}
+Check the execution: <span class="brk">[EXECUTION_URL]</span></pre>
+  </div>
+
+  <hr class="divider">
+
+  <h2>How to get the most out of it 🎓</h2>
+  <ul>
+    <li><strong>Name your nodes for what they do.</strong> "IF2" and "Switch1" mean nothing six weeks from now. "Has phone number?" tells the next person — probably you — exactly what's being checked.</li>
+    <li><strong>Keep workflows under roughly 15 nodes.</strong> Past that, look for a natural split point and move a chunk into its own sub-workflow called via "Execute Workflow."</li>
+    <li><strong>Export the JSON before a big edit.</strong> A quick local copy of a working version costs nothing and saves you when a "small" change breaks something three nodes downstream.</li>
+    <li><strong>Treat the error workflow as part of the build, not a nice-to-have.</strong> It's not done until both paths exist, not just the one that works when everything goes right.</li>
+  </ul>
+
+  <!-- ALWAYS present -->
+  <h2 id="honest">The honest bit ✅</h2>
+  <ul class="honest">
+    <li><strong>An Error Trigger workflow only catches failures inside the workflow.</strong> If the trigger itself never fires — a webhook that silently stops arriving — that's a separate problem, and it needs its own uptime check outside n8n.</li>
+    <li><strong>"Continue on Fail" can hide problems if nothing checks the result afterward.</strong> Missing data that gets waved through looks identical to missing data that got handled — pair it with an explicit check, always.</li>
+    <li><strong>Splitting into sub-workflows adds a little overhead.</strong> For a genuinely small, 3-node workflow, it's not worth the extra structure yet — this is a rule for growing complexity, not a rule for everything.</li>
+    <li><strong>None of this replaces watching the first real runs.</strong> Automation doesn't mean walking away the moment it's turned on — the first batch of real data is where you learn what you actually missed.</li>
+  </ul>
+
+  <!-- ============ FOOTER (always present) ============ -->
+  <!-- optional service CTA — include when the guide has a done-for-you angle -->
+  <div class="cta">
+    <h2>Want the workflow built properly, not just diagrammed? ⚙️</h2>
+    <p>If you'd rather have the error paths, checks, and alerts built into your actual n8n setup instead of retrofitted later, that's the done-for-you version.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/consultingcall" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

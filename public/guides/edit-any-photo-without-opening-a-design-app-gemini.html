@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Any Photo Without Opening a Design App Using Gemini</title>
+<meta name="guide-date" content="2026-08-10" />
+<meta name="guide-excerpt" content="You do not need Photoshop or a separate app to edit a photo anymore. One skill makes Gemini's image editing actually work, and it starts with how you write the prompt." />
+<meta name="guide-category" content="AI Tools" />
+<meta name="guide-tool" content="Gemini" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:110px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.ex td:first-child{width:90px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">You do not need Photoshop, or even a separate app, to edit a photo anymore. It is already sitting in your browser. One skill makes this actually work, and it is simpler than you think.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#how-it-works">↓ Skip to the three steps</a>
+    <span class="readtime">4 min read · Gemini, any plan</span>
+  </div>
+
+  <img src="images/edit-any-photo-without-opening-a-design-app-gemini.webp" alt="Editing a photo directly in Gemini without opening a design app" style="width:100%;border-radius:16px;margin:22px 0 8px;border:1px solid var(--line);">
+
+  <h2>What is actually happening here</h2>
+  <p>Gemini can receive an image, understand what is in it, and apply a specific visual change. The result comes back as an edited image, right there in the conversation. No download, no re-upload, no second app opened in another tab.</p>
+  <p>The part most people get wrong is the prompt. Sending a vague instruction like "make this better" or "enhance it" produces a vague result, because Gemini has no idea what better means to you. A specific instruction produces a specific result, every time.</p>
+
+  <div class="callout">
+    <span class="tag">The one rule</span>
+    <p>Vague prompt, vague result. Specific prompt, exact result. Everything else in this guide follows from that.</p>
+  </div>
+
+  <div class="steps3">
+    <div class="step-card"><div class="n">Step 1</div><div class="t">Open the photo</div><div class="d">Chrome sidebar, the Gemini app, or Google Slides. Same tool underneath.</div></div>
+    <div class="step-card"><div class="n">Step 2</div><div class="t">Name the change</div><div class="d">Not "improve." The exact thing: remove, swap, recolor, replace.</div></div>
+    <div class="step-card"><div class="n">Step 3</div><div class="t">See the result</div><div class="d">One instruction, one clean edit. No extra steps.</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="how-it-works">The three steps, in full</h2>
+
+  <ol class="flow">
+    <li><strong>Open your photo in Gemini.</strong> You have three options and none is better than the others: Chrome's sidebar (click the Gemini icon top-right), the Gemini app at gemini.google.com, or drop the image directly into a Google Slides slide and use Gemini from there. The same model is running underneath each one.</li>
+    <li><strong>Write the exact change, not a feeling.</strong> Skip "enhance this," "make it pop," or "improve the quality." Say what you literally want altered: "remove the person standing in the background," "change the sky to a sunset," "make the shirt blue instead of white." One specific instruction per message gets you one clean, reviewable edit.</li>
+    <li><strong>Review the result immediately.</strong> Gemini shows you the edited image in the same conversation. If it is right, done. If it needs a small adjustment, reply with the next specific instruction. No download, no third-party tool, no starting over.</li>
+  </ol>
+
+  <hr class="divider">
+
+  <h2>Vague vs. specific: what the difference looks like</h2>
+  <p>Here is the same situation written both ways, so you can see exactly what to avoid and what to send instead:</p>
+
+  <table class="ex">
+    <tr><td>Vague</td><td>"Make this photo look better."</td></tr>
+    <tr><td>Specific</td><td>"Remove the bin on the left side of the image."</td></tr>
+    <tr><td>Vague</td><td>"Fix the background."</td></tr>
+    <tr><td>Specific</td><td>"Replace the background with a plain white studio backdrop."</td></tr>
+    <tr><td>Vague</td><td>"Improve the lighting."</td></tr>
+    <tr><td>Specific</td><td>"Brighten the subject's face without changing the background."</td></tr>
+    <tr><td>Vague</td><td>"Make it more professional."</td></tr>
+    <tr><td>Specific</td><td>"Change the hoodie to a navy blue blazer."</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h2>Five edit prompts that work first try</h2>
+  <p>Copy any of these, drop in your photo, and send. Each one is written to give Gemini a clear, single instruction:</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 1 · Remove an object</span><button class="copy-btn" data-target="p1">Copy</button></div>
+    <pre id="p1">Remove the <span class="brk">[object]</span> from the background and fill the space naturally.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 2 · Swap the sky</span><button class="copy-btn" data-target="p2">Copy</button></div>
+    <pre id="p2">Replace the sky with a warm golden-hour sunset, keeping everything below the horizon unchanged.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 3 · Recolor a specific item</span><button class="copy-btn" data-target="p3">Copy</button></div>
+    <pre id="p3">Change the colour of the <span class="brk">[clothing item / object]</span> to <span class="brk">[colour]</span>. Keep everything else exactly as it is.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 4 · Clean up the background</span><button class="copy-btn" data-target="p4">Copy</button></div>
+    <pre id="p4">Replace the background with a plain white backdrop. Keep the subject sharp and unedited.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 5 · Adjust one area of lighting</span><button class="copy-btn" data-target="p5">Copy</button></div>
+    <pre id="p5">Brighten only the subject's face. Do not change the exposure of the background.</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="honest">The honest bit</h2>
+  <ul class="honest">
+    <li><strong>Complex edits sometimes need two passes.</strong> If you are removing something large and the fill looks off, a follow-up instruction like "smooth the fill in the top-left corner" usually fixes it faster than regenerating from scratch.</li>
+    <li><strong>Gemini will not always nail a photorealistic removal.</strong> For simple objects and clean backgrounds it is very good. For intricate scenes with lots of overlapping detail, results vary. Know when a dedicated tool is the better call.</li>
+    <li><strong>You still own the output.</strong> The edited image lives in the conversation. Download it before you close the tab if you need to keep it.</li>
+    <li><strong>This is not a replacement for professional retouching.</strong> For brand campaigns or print work, use it to rough out ideas quickly. Final polish is still a different job.</li>
+  </ul>
+
+  <div class="cta">
+    <h2>Want prompts that work across every AI tool, not just image edits?</h2>
+    <p>If you want a proper system for getting consistent results from Gemini, ChatGPT, and the rest, book a session and we will build it around your actual workflow.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/consultingcall" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

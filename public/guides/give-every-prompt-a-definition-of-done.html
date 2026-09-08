@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- TEMPLATE: copy this file, then replace everything marked [[ ... ]] and the sample sections.
+     Keep the CSS as-is (brand-locked). Add/remove components per references/formats.md. -->
+<title>Give Every Prompt a Definition of Done — a prompt engineering guide</title>
+<meta name="guide-date" content="2026-07-24">
+<meta name="guide-excerpt" content="Vague prompts produce vague output. Define 'done' before you hit send — the single habit that makes AI results predictable and repeatable.">
+<meta name="guide-category" content="Prompt Engineering">
+<meta name="guide-tool" content="Claude">
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .guide-top{padding-top:40px;}
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--charcoal-soft);border:none;font-weight:500;}
+  .backlink:hover{color:var(--coral-deep);}
+  .eyebrow{margin-top:34px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);font-weight:700;}
+  h1{font-size:clamp(32px,5.4vw,50px);line-height:1.1;margin:.28em 0 .32em;letter-spacing:-.02em;color:var(--charcoal);}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  /* overview cards */
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  /* numbered flow list */
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  /* link cards */
+  .linkcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+  .linkcard{display:block;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-left:3px solid var(--coral);}
+  .linkcard:hover{border-color:var(--coral);}
+  .lc-name{display:block;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .lc-desc{display:block;font-size:15px;color:var(--charcoal-soft);}
+  /* callout */
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  /* prompt block — jet black */
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre.plain{border-radius:12px;border-top:1px solid var(--code-border);}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  .prompt-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin:24px 0 8px;}
+  .prompt-label.spaced{margin-top:26px;}
+  /* comparison table */
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:120px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  /* footer */
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.linkcards{grid-template-columns:1fr;}.ex td:first-child{width:96px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">Most prompts describe the task and stop there. The ones that actually produce usable output on the first try end with something else entirely: a checklist for what counts as finished.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#start">↓ Skip to the prompts</a>
+    <span class="readtime">5 min read · works in any capable LLM</span>
+  </div>
+
+  <!-- ============ BODY: build per references/formats.md ============
+       Replace the sample sections below with the real ones for THIS guide.
+       Keep the intro above, the honest-bit, and the footer below. -->
+
+  <h2>What you're actually building 🎯</h2>
+  <p>A prompt is a job description. Most people write the "what" — the task, the topic, maybe a persona — and stop there. What they leave out is the "how you'll know it's right," so the model has to guess where the finish line is. It guesses wrong constantly, just quietly enough that you don't notice until the output's already back and something's off.</p>
+  <div class="callout"><span class="tag">The one rule</span><p>A prompt without a definition of done makes the model guess what "good" means. Tell it exactly how you'll know the output is right, not just what you want it to do.</p></div>
+
+  <div class="steps3">
+    <div class="step-card"><div class="n">Piece 1</div><div class="t">Role + task</div><div class="d">Who it's acting as, and what the job actually is.</div></div>
+    <div class="step-card"><div class="n">Piece 2</div><div class="t">Definition of done</div><div class="d">A short checklist for what counts as finished.</div></div>
+    <div class="step-card"><div class="n">Piece 3</div><div class="t">The judge pass</div><div class="d">A second prompt that checks the first one's work.</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="start">See the difference first</h2>
+  <p>Here's a completely normal, completely vague prompt. Nothing wrong with it grammatically — it just gives the model no way to check its own work:</p>
+
+  <pre class="plain">Write a LinkedIn post about why automation matters for small business owners.</pre>
+
+  <p>The model will produce <em>something</em>. It'll sound fine. But "fine" was never defined, so you have no way to tell it apart from "actually good" until you read it and feel a vague sense that it's not quite there. Here's the same task with a definition of done attached:</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 1 · the fixed version</span><button class="copy-btn" data-target="p1">Copy</button></div>
+    <pre id="p1">You are a LinkedIn ghostwriter for <span class="brk">[NICHE / ROLE]</span>. Write a LinkedIn post arguing that automation matters for small business owners — specifically ones still doing <span class="brk">[MANUAL TASK]</span> by hand.
+
+Definition of done — the post is only finished if all of these are true:
+- Opens with a specific, concrete scenario, not a general statement
+- Makes one clear argument, not three watered-down points
+- Includes one real or plausible number or detail that makes it credible
+- Ends with a line that invites a reply, not a generic CTA like "thoughts?"
+- Under <span class="brk">[WORD COUNT]</span> words
+
+If you can't hit all five, tell me which one you're compromising and why — don't silently ship a version that fails the checklist.</pre>
+  </div>
+
+  <p>Notice what changed: the task is the same, but now the model has a checkable target, and permission to flag a tradeoff instead of hiding it.</p>
+
+  <hr class="divider">
+
+  <h2>Add a second pass: the judge prompt</h2>
+  <p>A definition of done doesn't guarantee the model hits every item — it just makes misses visible. That's what this second prompt is for: run it against the first draft, checklist in hand, before you accept the output.</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt 2 · the judge pass</span><button class="copy-btn" data-target="p2">Copy</button></div>
+    <pre id="p2">You are a blunt editor reviewing a draft against a checklist.
+
+Checklist it was supposed to meet:
+<span class="brk">[PASTE THE DEFINITION OF DONE FROM THE ORIGINAL PROMPT]</span>
+
+The draft:
+<span class="brk">[PASTE THE DRAFT]</span>
+
+Score each checklist item pass/fail. For anything that fails, name the specific sentence or gap that causes it — no vague notes like "could be stronger." Then give me one rewritten version that actually passes all of them.</pre>
+  </div>
+
+  <p>This prompt barely changes between tasks — the checklist and the draft are the only variables. Keep it saved somewhere and reuse it across everything you write this way.</p>
+
+  <hr class="divider">
+
+  <h2>What this looks like end to end 📋</h2>
+  <p>Run Prompt 1 with the niche and task filled in, and a typical first draft opens like this:</p>
+  <pre class="plain">"Maria closed her bakery's books at 11pm again last night — by hand, in a spreadsheet, for the third time this week. She's not alone. Most small business owners aren't behind on automation because they don't see the value. They're behind because nobody showed them the one process worth fixing first..."</pre>
+  <p>Run that through Prompt 2 against the five-item checklist, and a typical judge response flags the real gap: the piece opens strong (pass), makes one argument (pass), but the "invites a reply" line at the end reads as a generic CTA — a fail, with the exact sentence named. You fix that one line instead of rewriting the whole post.</p>
+
+  <hr class="divider">
+
+  <h2>How to get the most out of it 🎓</h2>
+  <ul>
+    <li><strong>Write the checklist yourself first, in plain words.</strong> If you can't say what "good" looks like before you prompt, the model can't hit it either.</li>
+    <li><strong>Keep it to five or fewer criteria.</strong> More than that and the model starts hedging across all of them instead of nailing any single one.</li>
+    <li><strong>Make at least one item falsifiable.</strong> A word count, a required element, a specific structure. "Sounds good" isn't checkable — "under 150 words" is.</li>
+    <li><strong>Reuse the same judge prompt everywhere.</strong> It's the constant. Only the checklist and the draft change per task.</li>
+  </ul>
+
+  <!-- ALWAYS present -->
+  <h2 id="honest">The honest bit ✅</h2>
+  <ul class="honest">
+    <li><strong>A checklist doesn't guarantee compliance.</strong> Models still skip items sometimes, especially the third or fourth one down the list. That's exactly why the judge pass exists — to catch misses, not prevent them upfront.</li>
+    <li><strong>More criteria isn't automatically better.</strong> A ten-item checklist produces vague, hedged output that half-touches everything. Five sharp criteria beat ten soft ones.</li>
+    <li><strong>The judge pass costs you a second round trip.</strong> For genuinely throwaway, low-stakes prompts, doubling your token spend for a formal review isn't worth it.</li>
+    <li><strong>This doesn't fix a prompt that's vague about the actual task.</strong> A definition of done sharpens the finish line. It doesn't replace giving the model real context about where it's starting from.</li>
+  </ul>
+
+  <!-- ============ FOOTER (always present) ============ -->
+  <!-- optional service CTA — include when the guide has a done-for-you angle -->
+  <div class="cta">
+    <h2>Want the prompts built into your actual workflow? ⚙️</h2>
+    <p>If you'd rather have a proper generator-plus-judge system built around your real content and checklists, that's the done-for-you version.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/consultingcall" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

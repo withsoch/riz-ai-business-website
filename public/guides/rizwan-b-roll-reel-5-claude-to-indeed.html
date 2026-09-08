@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Make Your Resume Unrejectable Using Claude: Four Skills, One Loop</title>
+<meta name="guide-date" content="2026-08-22" />
+<meta name="guide-excerpt" content="Your resume is not the problem, your prompt is. Claude can run four back-to-back skills on your resume: ATS diagnoser, keyword recruiter, bullet rewriter, and mock hiring manager. Here is the exact loop." />
+<meta name="guide-category" content="Career" />
+<meta name="guide-tool" content="Claude" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  .steps4{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:140px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  .flow-chain{display:flex;align-items:center;gap:0;margin:22px 0 28px;flex-wrap:wrap;}
+  .flow-chip{background:var(--coral);color:#fff;border-radius:10px;padding:9px 16px;font-weight:700;font-size:15px;white-space:nowrap;}
+  .flow-arrow{color:var(--coral);font-size:20px;font-weight:800;padding:0 8px;}
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  @media(max-width:640px){body{font-size:17px;}.steps4{grid-template-columns:1fr;}.ex td:first-child{width:96px;}.flow-chain{gap:4px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">Most people paste their resume into ChatGPT and hope for the best. Your resume is not the problem. Your prompt is. Claude can run four back-to-back skills on your resume, and each one hands off to the next so it gets stronger at every step.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#the-four-skills">↓ Skip to the four skills</a>
+    <span class="readtime">6 min read · Claude</span>
+  </div>
+
+  <img src="images/rizwan-b-roll-reel-5-claude-to-indeed.webp" alt="Resume open on a laptop next to the Claude interface, ready for ATS diagnosis and rewriting" style="width:100%;border-radius:16px;margin:22px 0 8px;border:1px solid var(--line);">
+
+  <h2>Why pasting your resume into ChatGPT does not work</h2>
+  <p>The instinct is understandable: drop your resume in, ask for feedback, get a list of suggestions. The problem is that a single generic prompt gives you generic feedback. It does not simulate an Applicant Tracking System. It does not benchmark you against what real job posts are asking for. It does not rewrite your bullets to a proven formula. And it definitely does not quiz you on the interview questions a hiring manager is likely to pull from your specific experience.</p>
+  <p>Claude, used with the right structured prompts, can do all four of those things in a single session, in sequence. That sequence is the difference between a resume that feels improved and one that is actually optimised for the full hiring funnel: automated filter, recruiter screen, hiring manager review, and interview.</p>
+
+  <div class="callout">
+    <span class="tag">The core idea</span>
+    <p>One resume. Four checkpoints. Each skill builds on the last, so by the time you reach the interview prep stage, the work is already done.</p>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="the-four-skills">The four skills, explained</h2>
+
+  <div class="steps4">
+    <div class="step-card">
+      <div class="n">Skill 1</div>
+      <div class="t">The Diagnoser</div>
+      <div class="d">Scans your resume the way a real ATS would. Flags the exact sections that trip it up and tells you precisely how to fix them before a human ever sees it.</div>
+    </div>
+    <div class="step-card">
+      <div class="n">Skill 2</div>
+      <div class="t">The Recruiter</div>
+      <div class="d">Benchmarks you against a wide range of similar job posts and surfaces the keywords your resume is missing. Closes the gap between what you wrote and what hiring systems look for.</div>
+    </div>
+    <div class="step-card">
+      <div class="n">Skill 3</div>
+      <div class="t">The Rewriter</div>
+      <div class="d">Rebuilds your bullets using Google's XYZ formula: Accomplished X, measured by Y, by doing Z. Turns vague descriptions into concrete, quantified achievements.</div>
+    </div>
+    <div class="step-card">
+      <div class="n">Skill 4</div>
+      <div class="t">The Hiring Manager</div>
+      <div class="d">Runs a live mock interview based on your rewritten resume and scores every answer out of 10. You stop guessing what they will ask because you have already been asked it.</div>
+    </div>
+  </div>
+
+  <div class="flow-chain">
+    <span class="flow-chip">Diagnose</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-chip">Score</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-chip">Rewrite</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-chip">Prep</span>
+  </div>
+
+  <hr class="divider">
+
+  <h2>How to run each skill in Claude</h2>
+  <p>Open a single Claude conversation and paste your resume at the top. Then run each skill in order, keeping everything in the same thread so Claude retains context across all four steps.</p>
+
+  <ol class="flow">
+    <li>
+      <strong>Paste your full resume as plain text</strong> at the start of the conversation. No PDF, no formatting, just the raw content. Add the job description you are targeting directly below it.
+    </li>
+    <li>
+      <strong>Run Skill 1, The Diagnoser.</strong> Ask Claude to act as an ATS system and audit your resume for formatting issues, missing keywords, structural red flags, and anything that would cause it to be filtered before a human sees it.
+    </li>
+    <li>
+      <strong>Apply the fixes Claude flags</strong> directly in the conversation. Update your resume text in place and confirm the changes before moving on.
+    </li>
+    <li>
+      <strong>Run Skill 2, The Recruiter.</strong> Ask Claude to compare your updated resume against the patterns of similar roles and identify the specific keywords, phrases, and skills that are underrepresented.
+    </li>
+    <li>
+      <strong>Run Skill 3, The Rewriter.</strong> Ask Claude to rewrite your experience bullets using the XYZ formula. Give it permission to make reasonable assumptions about metrics if you do not have exact numbers, then review and adjust.
+    </li>
+    <li>
+      <strong>Run Skill 4, The Hiring Manager.</strong> Ask Claude to conduct a scored mock interview based on the final version of your resume. Tell it to ask the five questions a hiring manager is most likely to pull from your specific background, then score each of your answers out of 10 with reasoning.
+    </li>
+  </ol>
+
+  <hr class="divider">
+
+  <h2>The prompts to use for each skill</h2>
+  <p>Copy these into your Claude session in order. Replace the bracketed sections with your own content.</p>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Skill 1 prompt: The Diagnoser</span><button class="copy-btn" data-target="p1">Copy</button></div>
+    <pre id="p1">You are an ATS (Applicant Tracking System) scanner. Audit the resume below as if you are processing it for the following job description.
+
+Flag every section that would cause it to be filtered out or ranked poorly. For each issue, tell me:
+- What the problem is
+- Why it matters to an ATS
+- Exactly how to fix it
+
+Be specific. Do not give general advice.
+
+<span class="brk">[PASTE YOUR RESUME]</span>
+
+Job description:
+<span class="brk">[PASTE THE JOB DESCRIPTION]</span></pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Skill 2 prompt: The Recruiter</span><button class="copy-btn" data-target="p2">Copy</button></div>
+    <pre id="p2">Now act as a senior recruiter who has reviewed 1,000 applications for roles similar to this one.
+
+Compare my updated resume against what top candidates in this field typically present. List the keywords, skills, and phrases that are missing or underrepresented. Prioritise by how much they are likely to affect my ranking in an ATS and in a recruiter screen.
+
+Use the same resume and job description from above.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Skill 3 prompt: The Rewriter</span><button class="copy-btn" data-target="p3">Copy</button></div>
+    <pre id="p3">Now act as a professional resume writer trained on Google's XYZ formula:
+"Accomplished [X], as measured by [Y], by doing [Z]."
+
+Rewrite every bullet point in my experience section using this formula. Where I have not given you a specific metric, suggest a realistic placeholder I can verify and fill in. Do not pad or exaggerate. Keep each bullet to one or two lines.
+
+Output the full rewritten experience section, ready to copy.</pre>
+  </div>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Skill 4 prompt: The Hiring Manager</span><button class="copy-btn" data-target="p4">Copy</button></div>
+    <pre id="p4">Now act as the hiring manager for this role. You have just read my final resume.
+
+Ask me the 5 questions you are most likely to ask in a first-round interview, one at a time. After each answer I give you, score it out of 10 and explain what a 10-out-of-10 answer would have included.
+
+Start with question 1 now.</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h2>What the XYZ formula actually changes</h2>
+  <p>Most resume bullets describe a responsibility. The XYZ formula forces a result. Here is what the difference looks like in practice:</p>
+
+  <table class="ex">
+    <tr><td>Before</td><td>Managed social media accounts for the company and grew the audience.</td></tr>
+    <tr><td>After (XYZ)</td><td>Grew Instagram following by 340% in 6 months by launching a weekly short-form video series targeting industry decision-makers.</td></tr>
+    <tr><td>Before</td><td>Worked with the sales team to improve conversion rates.</td></tr>
+    <tr><td>After (XYZ)</td><td>Increased sales team conversion rate from 12% to 19% by redesigning the outbound email sequence and introducing a two-touch follow-up cadence.</td></tr>
+  </table>
+
+  <p>The rewritten versions are not longer. They are just more specific in the right direction: what changed, by how much, and what you did to make it happen. That specificity is what gets a bullet read instead of skimmed.</p>
+
+  <hr class="divider">
+
+  <h2 id="honest">The honest bit</h2>
+  <ul class="honest">
+    <li><strong>Claude will not know your actual numbers.</strong> The Rewriter skill will suggest placeholders. You need to go back and verify them. A made-up metric that gets questioned in an interview is worse than no metric at all.</li>
+    <li><strong>The Diagnoser flags ATS issues based on general patterns, not your specific employer's ATS configuration.</strong> Different companies use different systems. The advice is a strong baseline, not a guarantee of what any one ATS will do.</li>
+    <li><strong>The mock interview is useful but not identical to a real one.</strong> Claude does not know the interviewer's actual mood, hidden priorities, or the other candidates in the pool. Use it to build fluency, not to predict exact questions.</li>
+    <li><strong>Running all four skills in one conversation works best with Claude's longer context window.</strong> If you are on a limited plan, you may need to split the session, which means re-pasting the resume at each stage.</li>
+    <li><strong>This loop improves your resume for the jobs you target it at.</strong> A general-purpose resume that has been through all four skills is still less effective than one that has been targeted to a specific role and rerun from Skill 2 onward for each application.</li>
+  </ul>
+
+  <div class="cta">
+    <h2>Want the full four-skill setup built out for you?</h2>
+    <p>If you would rather have a tailored Claude prompt set for your specific role, industry, and resume, that is something we can put together in a single session.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/work" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

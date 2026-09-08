@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 3-Part Prompt That Fixes ChatGPT Agent Mode — a Soch Consulting guide</title>
+<meta name="guide-date" content="2026-08-04" />
+<meta name="guide-excerpt" content="Agent Mode will decide the scope for you if you let it. This three-part prompt structure — Goal, Boundary, Checkpoint — stops that from happening every time." />
+<meta name="guide-category" content="Prompting" />
+<meta name="guide-tool" content="ChatGPT Agent Mode" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .guide-top{padding-top:40px;}
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--charcoal-soft);border:none;font-weight:500;}
+  .backlink:hover{color:var(--coral-deep);}
+  .eyebrow{margin-top:34px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);font-weight:700;}
+  h1{font-size:clamp(32px,5.4vw,50px);line-height:1.1;margin:.28em 0 .32em;letter-spacing:-.02em;color:var(--charcoal);}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--charcoal);font-weight:600;}
+  .skip:hover{border-color:var(--coral);color:var(--coral-deep);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  /* overview cards */
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  /* numbered flow list */
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  /* callout */
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  /* part cards — the three parts */
+  .parts{display:grid;grid-template-columns:1fr;gap:14px;margin:28px 0 10px;}
+  .part-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:20px 22px;border-left:4px solid var(--coral);}
+  .part-card .part-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:6px;}
+  .part-card .part-title{font-size:19px;font-weight:800;color:var(--charcoal);margin-bottom:8px;}
+  .part-card .part-body{font-size:16px;color:var(--charcoal-soft);margin:0;}
+  /* prompt block — jet black */
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre.plain{border-radius:12px;border-top:1px solid var(--code-border);}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  pre .label{color:var(--coral);font-weight:700;}
+  .prompt-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin:24px 0 8px;}
+  .prompt-label.spaced{margin-top:26px;}
+  /* comparison table */
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex th{text-align:left;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--charcoal-soft);font-weight:700;padding:8px 6px;border-bottom:2px solid var(--line);}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:120px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  /* footer */
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .foot-meta{margin-top:10px;font-size:14px;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.ex td:first-child{width:96px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">Without a clear structure, Agent Mode decides the scope for you. This three-part template — Goal, Boundary, Checkpoint — puts that decision back in your hands before the agent takes a single step.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#template">↓ Skip to the template</a>
+    <span class="readtime">5 min read · ChatGPT Agent Mode</span>
+  </div>
+
+  <img src="images/the-3-part-prompt-that-fixes-chatgptagent-mode.webp" alt="Three-part prompt structure for ChatGPT Agent Mode showing Goal, Boundary, and Checkpoint sections" style="width:100%;border-radius:16px;margin:22px 0 8px;border:1px solid var(--line);">
+
+  <h2>The real problem with Agent Mode</h2>
+  <p>Agent Mode is genuinely powerful. It can browse, write, click, search, and chain together a sequence of actions without you babysitting each step. That's also exactly what makes it dangerous when your prompt is vague.</p>
+  <p>A vague prompt doesn't cause the agent to do nothing — it causes the agent to fill in the blanks itself. It decides what "done" looks like. It decides what's in scope. It decides how far to go. Sometimes those decisions are fine. Sometimes they aren't, and you only find out after.</p>
+
+  <div class="callout">
+    <span class="tag">The core problem</span>
+    <p>Agent Mode doesn't stall when it's uncertain — it guesses and continues. A well-structured prompt removes the guessing before it starts.</p>
+  </div>
+
+  <div class="steps3">
+    <div class="step-card">
+      <div class="n">Part 1</div>
+      <div class="t">Goal</div>
+      <div class="d">The specific outcome you want — not the broad topic, the exact deliverable.</div>
+    </div>
+    <div class="step-card">
+      <div class="n">Part 2</div>
+      <div class="t">Boundary</div>
+      <div class="d">What it is explicitly not allowed to touch, do, or decide on your behalf.</div>
+    </div>
+    <div class="step-card">
+      <div class="n">Part 3</div>
+      <div class="t">Checkpoint</div>
+      <div class="d">The exact moment it must stop and show you before going any further.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>What each part is actually doing</h2>
+
+  <div class="parts">
+    <div class="part-card">
+      <div class="part-label">Part 1</div>
+      <div class="part-title">Goal — the specific outcome, not the vague topic</div>
+      <p class="part-body">Most prompts describe a topic: "flights to Dubai," "competitor research," "draft an email." A Goal describes an outcome: "compare 5 flights to Dubai under $700 and build a table." The difference is that a topic leaves the finish line open. An outcome closes it. The agent knows exactly what it's producing and what "done" means.</p>
+    </div>
+    <div class="part-card">
+      <div class="part-label">Part 2</div>
+      <div class="part-title">Boundary — what it cannot touch or decide</div>
+      <p class="part-body">Agent Mode will act on whatever isn't explicitly ruled out. If you don't say "don't book anything," it may book something. If you don't say "don't enter payment info," it may interpret an autofill as helpful. The Boundary isn't about distrusting the AI — it's about defining the edge of the task so the agent can't accidentally expand it.</p>
+    </div>
+    <div class="part-card">
+      <div class="part-label">Part 3</div>
+      <div class="part-title">Checkpoint — where it stops and shows you first</div>
+      <p class="part-body">This is the most skipped part, and the most valuable one. A Checkpoint gives you a review gate before any irreversible action. It doesn't slow the agent down — it gives you a moment to catch a misunderstanding before it becomes a problem. Name the exact deliverable it should show you, and be explicit that nothing happens after until you confirm.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2 id="template">The template — copy this before your next agent task</h2>
+
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt template · ChatGPT Agent Mode</span><button class="copy-btn" data-target="p-template">Copy</button></div>
+    <pre id="p-template"><span class="label">GOAL</span> — [the specific outcome you want, not the broad topic]
+
+<span class="label">BOUNDARY</span> — [what you are not allowed to touch, do, submit, or decide]
+
+<span class="label">CHECKPOINT</span> — show me [the exact deliverable] before doing anything else</pre>
+  </div>
+
+  <p>Three lines. Every agent task. The structure takes ten seconds to fill in and removes the most common failure mode: the agent doing something you didn't intend because you didn't say you didn't want it.</p>
+
+  <hr class="divider">
+
+  <h2>Two filled-in examples</h2>
+
+  <h3>Example 1 — Flight research</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Filled-in example · travel research</span><button class="copy-btn" data-target="p-ex1">Copy</button></div>
+    <pre id="p-ex1"><span class="label">GOAL</span> — compare 5 flights to Dubai under $700 and build a table
+showing airline, departure time, duration, price, and stops
+
+<span class="label">BOUNDARY</span> — don't book anything, don't enter payment info,
+don't save my details anywhere
+
+<span class="label">CHECKPOINT</span> — show me the completed table before doing anything else</pre>
+  </div>
+
+  <h3 class="spaced">Example 2 — Competitor research</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Filled-in example · market research</span><button class="copy-btn" data-target="p-ex2">Copy</button></div>
+    <pre id="p-ex2"><span class="label">GOAL</span> — find 4 direct competitors to [my product], summarise
+their pricing, key features, and any obvious gaps in what they offer
+
+<span class="label">BOUNDARY</span> — don't sign up for any accounts, don't submit any forms,
+don't contact anyone on my behalf
+
+<span class="label">CHECKPOINT</span> — show me the competitor summary before going any further</pre>
+  </div>
+
+  <h3 class="spaced">Example 3 — Email draft review</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Filled-in example · communications</span><button class="copy-btn" data-target="p-ex3">Copy</button></div>
+    <pre id="p-ex3"><span class="label">GOAL</span> — draft a follow-up email to a client who hasn't responded
+in 10 days — professional, brief, no more than 5 sentences
+
+<span class="label">BOUNDARY</span> — don't send anything, don't access my inbox,
+don't personalise with details I haven't given you
+
+<span class="label">CHECKPOINT</span> — show me the draft before doing anything else</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h2>When this matters most</h2>
+  <p>The three-part structure is useful for any agent task, but it's non-negotiable in situations where an action can't be easily undone:</p>
+
+  <table class="ex">
+    <tr><th>Situation</th><th>Why the structure protects you</th></tr>
+    <tr><td>Anything financial</td><td>Boundary explicitly rules out purchases, bookings, or payment interactions — the agent can't interpret "find the best option" as "book the best option."</td></tr>
+    <tr><td>Sending messages</td><td>Checkpoint forces a review gate before any send action. You see the draft; nothing goes out until you confirm.</td></tr>
+    <tr><td>Form submissions</td><td>Boundary prevents the agent from treating a helpfully pre-filled form as an invitation to submit it.</td></tr>
+    <tr><td>Multi-step research</td><td>Goal defines the exact deliverable so the agent stops at the right point instead of continuing into actions you didn't intend.</td></tr>
+    <tr><td>Anything irreversible</td><td>Checkpoint + Boundary together create a hard stop before the point of no return.</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h2 id="honest">The honest bit ✅</h2>
+  <ul class="honest">
+    <li><strong>This structure doesn't make Agent Mode foolproof.</strong> It removes a specific failure mode — scope creep from vague prompts — but it doesn't replace reading what the agent is doing before you confirm at the Checkpoint.</li>
+    <li><strong>The Checkpoint only works if you actually review it.</strong> If you hit confirm without reading the output, you've skipped the whole point of the gate.</li>
+    <li><strong>Some agent actions are fast enough to outrun a Checkpoint.</strong> For anything involving accounts, payments, or real-world actions, pair this structure with cautious browser permissions — don't rely on the prompt alone.</li>
+    <li><strong>The Boundary tells the agent what not to do, not what it can't do.</strong> It's a clear instruction, not a technical lock. Strong Boundaries are specific: "don't book anything" is better than "be careful with purchases."</li>
+    <li><strong>You'll still need to adapt the wording.</strong> This is a starting structure, not a magic phrase. The more specific your Goal and Boundary are to the actual task, the better it works.</li>
+  </ul>
+
+  <div class="cta">
+    <h2>Want your team prompting agents properly, not just occasionally? 🎯</h2>
+    <p>If you'd rather build this kind of structure into how your team uses AI day-to-day — not just as a tip someone read once — that's what the coaching version looks like.</p>
+    <p><a class="button" href="https://cal.com/consult-with-riz/consultingcall" target="_blank" rel="noopener noreferrer">Book a call →</a></p>
+  </div>
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/" target="_blank" rel="noopener noreferrer">@itsriz</a> for AI tips every single day.</p>
+    <p class="foot-meta">Written by <strong>Riz</strong></p>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>

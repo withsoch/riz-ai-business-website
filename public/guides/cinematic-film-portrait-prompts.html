@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 Cinematic Film Portrait Prompts — light, grain, and one rule that makes them read as film</title>
+<meta name="guide-date" content="2026-07-28" />
+<style>
+  :root{
+    --coral:#EA6A47;--coral-deep:#C8502F;
+    --cream:#F5EFE0;--cream-2:#FBF7EE;
+    --charcoal:#3D3D3D;--charcoal-soft:#5A5754;--line:#E4DCC9;
+    --code-bg:#000000;--code-head:#1A1815;--code-fg:#F3ECDD;--code-accent:#F0A488;--code-border:#262320;
+    --wrap:760px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.68;font-size:18px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--coral-deep);text-decoration:none;border-bottom:1px solid rgba(200,80,47,.28);}
+  a:hover{border-bottom-color:var(--coral-deep);}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--coral);z-index:50;transition:width .1s linear;}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+  .eyebrow{margin-top:52px;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);font-weight:700;}
+  h1{font-size:clamp(32px,5.4vw,50px);line-height:1.1;margin:.28em 0 .32em;letter-spacing:-.02em;color:var(--charcoal);}
+  .lede{font-size:21px;color:var(--charcoal-soft);max-width:60ch;margin:0 0 18px;}
+  .quickrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:14px;color:var(--charcoal-soft);}
+  .skip{display:inline-flex;align-items:center;gap:7px;background:transparent;border:2px solid var(--coral);border-radius:999px;padding:9px 20px;color:var(--coral-deep);font-weight:700;font-size:14.5px;transition:all .15s;}
+  .skip:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  .readtime{opacity:.85;}
+  h2{font-size:clamp(24px,3.5vw,31px);margin:2.1em 0 .5em;letter-spacing:-.01em;color:var(--charcoal);scroll-margin-top:24px;}
+  h3{font-size:20px;margin:1.7em 0 .4em;color:var(--charcoal);}
+  h3.spaced{margin-top:2em;}
+  p{margin:0 0 1.05em;}
+  strong{color:var(--charcoal);font-weight:700;}
+  .muted{color:var(--charcoal-soft);}.small{font-size:16px;}
+  .divider{position:relative;height:1px;background:var(--line);border:0;margin:58px 0 6px;}
+  .divider::before{content:"";position:absolute;left:0;top:-2px;width:44px;height:4px;background:var(--coral);border-radius:2px;}
+  ol,ul{margin:0 0 1.2em;padding-left:1.35em;}li{margin:.45em 0;}
+  /* overview cards */
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px;}
+  .step-card{background:var(--cream-2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;transition:transform .15s,border-color .15s,box-shadow .15s;}
+  .step-card:hover{border-color:var(--coral);transform:translateY(-3px);box-shadow:0 10px 22px rgba(61,61,61,.09);}
+  .step-card .n{font-weight:800;color:var(--coral);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+  .step-card .t{font-weight:700;margin-bottom:4px;}
+  .step-card .d{font-size:15px;color:var(--charcoal-soft);}
+  /* numbered flow list */
+  ol.flow{list-style:none;padding-left:0;counter-reset:step;}
+  ol.flow>li{counter-increment:step;position:relative;padding:14px 18px 14px 60px;margin:10px 0;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;}
+  ol.flow>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:8px;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  /* link cards */
+  .linkcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+  .linkcard{display:block;background:var(--cream-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-left:3px solid var(--coral);}
+  .linkcard:hover{border-color:var(--coral);}
+  .lc-name{display:block;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .lc-desc{display:block;font-size:15px;color:var(--charcoal-soft);}
+  /* callout */
+  .callout{border-left:4px solid var(--coral);background:var(--cream-2);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0 22px;}
+  .callout .tag{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin-bottom:5px;}
+  .callout p:last-child{margin-bottom:0;}
+  /* prompt block — jet black */
+  .prompt{position:relative;margin:26px 0 30px;}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;background:var(--code-head);border-radius:12px 12px 0 0;padding:9px 14px 9px 16px;border:1px solid var(--code-border);border-bottom:none;}
+  .prompt-head .lbl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--code-accent);font-weight:700;}
+  .copy-btn{background:transparent;color:#D9D2C4;border:1px solid #3A3733;border-radius:7px;font-size:12.5px;padding:4px 11px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .copy-btn:hover{background:var(--coral);color:#fff;border-color:var(--coral);}
+  pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-border);border-top:none;border-radius:0 0 12px 12px;padding:20px 22px;margin:0;overflow-x:auto;font-size:14.5px;line-height:1.62;font-family:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;}
+  pre.plain{border-radius:12px;border-top:1px solid var(--code-border);}
+  pre .brk{color:var(--code-accent);font-weight:600;}
+  .prompt-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:800;margin:24px 0 8px;}
+  .prompt-label.spaced{margin-top:26px;}
+  /* comparison table */
+  .ex{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:16px;}
+  .ex td{border-bottom:1px solid var(--line);padding:11px 6px;vertical-align:top;}
+  .ex td:first-child{color:var(--coral-deep);font-weight:700;width:120px;white-space:nowrap;}
+  .honest li{margin:.55em 0;}
+  /* footer */
+  .cta{margin-top:44px;background:var(--charcoal);color:var(--cream);border-radius:18px;padding:32px 30px;}
+  .cta h2{color:#fff;margin:0 0 .35em;}
+  .cta p{color:#DAD3C4;margin-bottom:1em;}
+  .cta a.button{display:inline-block;background:var(--coral);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;text-decoration:none;border:none;}
+  .cta a.button:hover{background:var(--coral-deep);}
+  .cta a{color:#F3B39C;}
+  .guide-foot{margin:34px 0 90px;padding-top:22px;border-top:1px solid var(--line);color:var(--charcoal-soft);font-size:15px;}
+  .foot-follow{font-size:17px;color:var(--charcoal);}
+  .guide-foot a{color:var(--coral-deep);}
+  .signature{display:flex;align-items:center;gap:12px;margin-top:20px;}
+  .sig-avatar{flex-shrink:0;width:38px;height:38px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;}
+  .sig-name{font-weight:700;color:var(--charcoal);font-size:15px;line-height:1.3;}
+  .sig-role{color:var(--charcoal-soft);font-size:13.5px;line-height:1.3;}
+  @media(max-width:640px){body{font-size:17px;}.steps3{grid-template-columns:1fr;}.linkcards{grid-template-columns:1fr;}.ex td:first-child{width:96px;}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.progress{transition:none;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="wrap">
+
+  <p class="lede">Seven prompts built around one idea: a portrait reads as "film" because of the light and the grain, not the face. Swap in your own subject, keep the rest, and it holds up.</p>
+
+  <div class="quickrow">
+    <a class="skip" href="#prompts">↓ Skip to the prompts</a>
+    <span class="readtime">5 min read · works in any image model that takes long-form prompts</span>
+  </div>
+
+  <!-- ============ BODY: build per references/formats.md ============
+       Replace the sample sections below with the real ones for THIS guide.
+       Keep the intro above, the honest-bit, and the footer below. -->
+
+  <h2>What makes these read as film, not AI 🎞️</h2>
+  <p>Most "cinematic" prompts fail because they pile on adjectives — moody, dramatic, atmospheric — without ever naming a light source. A model can't render "moody"; it can render "one amber sodium lamp against a dark blue shadow." Every prompt below names exactly one dominant light, one color contrast, and film grain. That's the whole trick.</p>
+  <div class="callout"><span class="tag">The one rule</span><p>Name one light source, one color contrast, and grain — in that order. Drop any of the three and it reads as a clean digital photo, not film.</p></div>
+
+  <hr class="divider">
+
+  <h2 id="prompts">The 7 prompts</h2>
+  <p>Each one is a full scene description with a <span class="brk" style="color:var(--coral-deep);font-weight:600;">[SUBJECT]</span> placeholder — swap in 2-3 concrete details about your subject (hair, one clothing item, a gesture) rather than leaving it blank. Everything else can stay as-is.</p>
+
+  <h3>1. Subway platform, last train 🚇</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Subway platform</span><button class="copy-btn" data-target="p1">Copy</button></div>
+    <pre id="p1">A medium shot on a nearly empty subway platform at night. <span class="brk">[SUBJECT]</span>, positioned slightly off-center, waits near the edge as a train blurs past in the background, its lit windows streaking into long horizontal lines of white and yellow. Overhead fluorescent tubes cast a flat, slightly green-white light down the platform, catching the sheen of tiled walls and worn signage. A single warm sodium light from a stairwell entrance breaks the cool cast, warming one side of the frame. The image carries visible 35mm film grain, slightly crushed shadows, and a faint halation around the brightest lights. Mood: tired, anonymous, late-night transit solitude.</pre>
+  </div>
+
+  <h3>2. Laundromat, after midnight 🧺</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Laundromat</span><button class="copy-btn" data-target="p2">Copy</button></div>
+    <pre id="p2">A close, waist-up shot inside a small laundromat well past midnight. <span class="brk">[SUBJECT]</span> leans against a row of dryers, one machine's drum glowing warm amber-white behind them, tumbling clothes visible through the round window. Outside, an unfocused street sign in sodium orange bleeds through the front glass, mixing with the laundromat's cool fluorescent overheads to split the frame into warm and cold halves. Detergent boxes and folded stacks sit soft-focus in the foreground. The film stock reads slightly faded, with muted mustard and teal tones and visible grain in the shadow. Mood: quiet, transient, a little lonely, but not sad.</pre>
+  </div>
+
+  <h3>3. Parking garage, sodium light 🅿️</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Parking garage</span><button class="copy-btn" data-target="p3">Copy</button></div>
+    <pre id="p3">A wide, low-angle shot in a mostly empty concrete parking garage at night. <span class="brk">[SUBJECT]</span> stands between two support pillars, lit from above by a single sodium-vapor lamp that casts a hard amber pool of light, the rest of the frame falling into deep blue-black shadow. Faint tire marks and oil stains texture the concrete floor. A parked car's taillight glow bleeds red into the far corner of the frame. Harsh contrast, minimal color palette (amber, near-black, one accent of red), visible film grain, and a slight vignette toward the corners. Mood: isolated, tense, neo-noir stillness.</pre>
+  </div>
+
+  <h3>4. Library stacks, one lamp 📚</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Library stacks</span><button class="copy-btn" data-target="p4">Copy</button></div>
+    <pre id="p4">A vertical, three-quarter shot down a narrow library aisle, tall shelving disappearing into shadow on both sides. <span class="brk">[SUBJECT]</span> sits cross-legged on the floor between the stacks, a single brass desk lamp beside them casting a warm, contained pool of light across their lap and an open book, the rest of the aisle sinking into cool near-black. Dust is visible drifting through the lamp's beam. Spines of old hardcovers are just legible at the edge of the light. Palette: warm amber light against deep blue-grey shadow, soft film grain, gentle vignette. Mood: private, hushed, absorbed in thought.</pre>
+  </div>
+
+  <h3>5. Beach bonfire, dusk 🔥</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Beach bonfire</span><button class="copy-btn" data-target="p5">Copy</button></div>
+    <pre id="p5">A wide shot on a dark beach at dusk, waves barely visible as a dark textured band behind a low bonfire. <span class="brk">[SUBJECT]</span> sits close to the fire, rim-lit in warm orange along one side of their face and shoulder, the rest of them falling into cool blue silhouette against a fading tangerine-to-navy sky. Sparks drift upward, slightly soft-focus. Sand in the foreground holds faint firelight reflections. High contrast between warm key light and cool ambient light, visible grain, soft halation around the flame. Mood: intimate, wistful, end-of-summer melancholy.</pre>
+  </div>
+
+  <h3>6. Hotel corridor, one sconce 🚪</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Hotel corridor</span><button class="copy-btn" data-target="p6">Copy</button></div>
+    <pre id="p6">A symmetrical, straight-on shot down a long hotel corridor, patterned carpet in muted red and gold receding to a vanishing point. <span class="brk">[SUBJECT]</span> stands mid-corridor beside a single brass wall sconce, its warm light pooling around them while the far ends of the hallway fall into soft shadow. Identical doors line both sides, numbers barely legible. The image carries a slightly desaturated, warm-toned film emulation, gentle grain, and soft corner vignetting. Mood: still, cinematic unease, the quiet of a hallway between rooms.</pre>
+  </div>
+
+  <h3>7. Night market stall, string lights 🏮</h3>
+  <div class="prompt">
+    <div class="prompt-head"><span class="lbl">Prompt · Night market</span><button class="copy-btn" data-target="p7">Copy</button></div>
+    <pre id="p7">A close, candid three-quarter shot at a night market food stall. <span class="brk">[SUBJECT]</span> stands just in front of the stall, strings of warm bulb lights overhead throwing soft round bokeh across the top of the frame. Steam rises from a nearby cooking surface, catching the light and softening the background into a warm haze. Stall signage and hanging paper lanterns add small pops of red and gold at the edges. The palette leans warm overall — amber, red, gold — with a single cooler streetlight in the far background for contrast. Visible grain, handheld framing, slightly off-level. Mood: alive, warm, unposed.</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h2>How to get the most out of it 🎓</h2>
+  <ul>
+    <li><strong>Give [SUBJECT] 2-3 concrete details, not zero.</strong> Hair, one clothing item, one gesture. Leave it blank and every prompt collapses into the same generic model shot.</li>
+    <li><strong>Pair it with a reference photo if your tool supports image input.</strong> Let the text carry the lighting and mood; let the reference carry the actual likeness.</li>
+    <li><strong>Keep the light-source and grain language even if you change everything else.</strong> That's what's doing the "film" work — not the subject description.</li>
+    <li><strong>Regenerate 3-4 times per prompt.</strong> Shadow placement and grain rolls a bit of randomness each pass; the keeper is rarely the first one.</li>
+  </ul>
+
+  <!-- ALWAYS present -->
+  <h2 id="honest">The honest bit ✅</h2>
+  <ul class="honest">
+    <li><strong>These are a starting point, not a guarantee.</strong> Different image models read "film grain" and specific light colors differently — expect to adjust wording per tool.</li>
+    <li><strong>Detailed text still can't fully control a real person's likeness.</strong> If you're generating a portrait of a specific real person, use your platform's face-reference or consistency feature instead of trying to describe their features in words.</li>
+    <li><strong>Long, adjective-dense prompts can tip into an over-styled, "AI-glossy" look.</strong> If a result looks fake, the fix is usually removing adjectives, not adding more.</li>
+    <li><strong>This exact aesthetic is everywhere right now.</strong> The lighting formula gets you 80% of the way there — the specific location and gesture you choose is what makes a set feel like yours instead of one more feed of the same look.</li>
+  </ul>
+
+  <!-- ============ FOOTER (always present) ============ -->
+  <!-- no service-CTA block: no done-for-you angle fits a straight prompt list -->
+
+  <div class="guide-foot">
+    <p class="foot-follow">Follow <a href="https://www.instagram.com/etz.riz/reels/">@itsriz</a> for AI tips every single day.</p>
+    <div class="signature">
+      <div class="sig-avatar">R</div>
+      <div class="sig-text">
+        <div class="sig-name">Riz</div>
+        <div class="sig-role">Writes about AI &amp; automation, one guide at a time</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.target);var text=el.innerText;
+      function done(){var old=btn.textContent;btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent=old;},1500);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,cb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb();}
+</script>
+
+</body>
+</html>
